@@ -34,7 +34,8 @@ model Wallet {
 model Transaction {
   id String @id @unique @default(uuid())
   totalTransaction Int
-  createdAt DateTime @default(now())
+  createdAt DateTime
+  information String 
   updateAt DateTime?
   walletId String
   wallet Wallet @relation(fields: [walletId],references: [id])

@@ -21,3 +21,19 @@ export interface IWallet {
   createAt: string;
   updateAt: string;
 }
+
+export interface Itransaction {
+    totalTransaction :number,
+    createdAt :string,
+    userId: string,
+    categoryId :number,
+    information:string
+}
+
+export interface IUpdateTransaction {
+  totalTransaction :number,
+  createdAt :string,
+  categoryId :number,
+  information:string,
+  updateAt?:Date
+}

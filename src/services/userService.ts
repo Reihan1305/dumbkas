@@ -1,12 +1,12 @@
 import { hash, compare } from "bcrypt";
 import { Ilogin, Iregister, Iuser } from "../types/app";
-import db from "../lib/db";
+import prisma from "../lib/prisma";
 import jwt from "jsonwebtoken";
 
 export default new (class userServices {
   async register(body: Iregister) {
     try {
-      const findEmail = await db.user.findFirst({
+      const findEmail = await prisma.user.findFirst({
         where: { email: body.email },
       });
       if (findEmail) {
@@ -15,7 +15,7 @@ export default new (class userServices {
 
       const hashPassword = await hash(body.password, 10);
 
-      const newUser = await db.user.create({
+      const newUser = await prisma.user.create({
         data: {
           email: body.email,
           password: hashPassword,
@@ -40,7 +40,7 @@ export default new (class userServices {
 
   async login(body: Ilogin) {
     try {
-      const userByEmail = await db.user.findFirst({
+      const userByEmail = await prisma.user.findFirst({
         where: { email: body.email },
       });
       if (!userByEmail) {
@@ -70,9 +70,12 @@ export default new (class userServices {
   }
   async getLoginUser(userId: string) {
     try {
-      const findUser = await db.user.findFirst({ where: { id: userId },include:{
-        wallet:true
-      }});
+      const findUser = await prisma.user.findFirst({
+        where: { id: userId },
+        include: {
+          wallet: true,
+        },
+      });
 
       if (!findUser) {
         throw new Error("user not found");
@@ -82,7 +85,7 @@ export default new (class userServices {
         id: findUser.id,
         username: findUser.userName,
         email: findUser.email,
-        wallet :findUser.wallet
+        wallet: findUser.wallet,
       };
       return payload;
     } catch (error) {
@@ -93,7 +96,7 @@ export default new (class userServices {
 
   async getAllUser() {
     try {
-      return (await db.user.findMany()).map((user) => {
+      return (await prisma.user.findMany()).map((user) => {
         return {
           id: user.id,
           name: user.userName,
@@ -108,13 +111,13 @@ export default new (class userServices {
 
   async updateUser(body: Iuser, userId: string) {
     try {
-      const findUser = await db.user.findFirst({ where: { id: userId } });
+      const findUser = await prisma.user.findFirst({ where: { id: userId } });
 
       if (!findUser) {
         throw new Error("user not found");
       }
 
-      const updateUser = await db.user.update({
+      const updateUser = await prisma.user.update({
         where: { id: findUser.id },
         data: body,
       });
