@@ -70,6 +70,21 @@ export default new (class transactionController {
     }
   }
 
+  async detailTransaction(req:Request,res:Response){
+    try {
+      const {transactionId} = req.params
+
+      const transaction = await transactionService.detailTransaction(res.locals.user.id,transactionId)
+
+      return res.status(200).json({
+        status:true,
+        data:transaction
+      })
+    } catch (error) {
+      return res.status(500).json({Status:false,message:error})
+    }
+  }
+
   async updateTransaction(req: Request, res: Response) {
     try {
       const { transactionId } = req.params;
