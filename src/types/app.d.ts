@@ -1,3 +1,5 @@
+import { categoryType } from "@prisma/client";
+
 export interface Iregister {
   userName: string;
   email: string;
@@ -22,12 +24,21 @@ export interface IWallet {
   updateAt: string;
 }
 
+export interface IUpdateWallet{
+  totalAmount: number;
+  updateAt: string;
+}
+
 export interface Itransaction {
     totalTransaction :number,
-    createdAt :string,
-    userId: string,
+    createdAt :Date,
     categoryId :number,
-    information:string
+    information:string,
+    category:{
+      name:string,
+      type:categoryType,
+      imgUrl:string
+    }
 }
 
 export interface IUpdateTransaction {

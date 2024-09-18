@@ -8,7 +8,6 @@ import transactionService from "../services/transactionService";
 export default new (class transactionController {
   async createTransaction(req: Request, res: Response) {
     try {
-      req.body.userId = res.locals.user.id;
       const { error } = transaction.validate(req.body);
 
       if (error) {
@@ -16,7 +15,8 @@ export default new (class transactionController {
       }
 
       const newtTransaction = await transactionService.createTransaction(
-        req.body
+        req.body,
+        res.locals.user.id
       );
 
       return res.status(201).json({

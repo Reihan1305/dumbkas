@@ -4,7 +4,6 @@ export const transaction = Joi.object({
     totalTransaction :Joi.number().required(),
     createdAt :Joi.string().required(),
     categoryId :Joi.number().required(),
-    userId: Joi.string().required(),
     information :Joi.string().required()
 })
 

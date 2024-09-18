@@ -2,10 +2,10 @@ import { Itransaction, IUpdateTransaction } from "../types/app";
 import prisma from "../lib/prisma";
 
 export default new (class transactionService {
-  async createTransaction(body: Itransaction) {
+  async createTransaction(body: Itransaction,userId:string) {
     try {
       const user = await prisma.user.findFirst({
-        where: { id: body.userId },
+        where: { id: userId },
         include: { wallet: true },
       });
 
@@ -48,14 +48,16 @@ export default new (class transactionService {
           data: {
             totalAmount:
               wallet.totalAmount + createTransaction.totalTransaction,
+              updateAt:new Date()
           },
         });
-      } else {
+      } else if(category.type === "outCome") {
         await prisma.wallet.update({
           where: { id: wallet.id },
           data: {
             totalAmount:
               wallet.totalAmount - createTransaction.totalTransaction,
+            updateAt:new Date()
           },
         });
       }
@@ -264,51 +266,54 @@ export default new (class transactionService {
         throw new Error("transaction not found");
       }
 
-      if (
-        typeof body.totalTransaction === "number" &&
-        body.totalTransaction > 0
-      ) {
-        const updateData =
-          oldTransaction.category.type === "income"
-            ? {
-                totalAmount:
-                  wallet.totalAmount +
-                  body.totalTransaction -
-                  oldTransaction.totalTransaction,
-              }
-            : {
-                totalAmount:
-                  wallet.totalAmount -
-                  body.totalTransaction +
-                  oldTransaction.totalTransaction,
-              };
-
-        await prisma.wallet.update({
-          where: { id: wallet.id },
-          data: {
-            ...updateData,
-            updateAt: new Date(),
-          },
-        });
-      }
-
       if (typeof body.categoryId === "number") {
         const category = await prisma.category.findFirst({
           where: { id: body.categoryId },
         });
+
         if (!category) {
           throw new Error("Category not found");
         }
+
+        body.categoryId = category.id
       }
 
-      await prisma.transaction.update({
+      const updateTransaction = await prisma.transaction.update({
         where: {
           id: oldTransaction.id,
           walletId: wallet.id,
         },
         data: body,
+        include:{
+          category:true
+        }
       });
 
+      console.log(typeof body.totalTransaction)
+      if(oldTransaction.category.type !== updateTransaction.category.type){
+        if(typeof body.totalTransaction === "number"){
+          const data = updateTransaction.category.type === "income" ? updateTransaction.totalTransaction +(wallet.totalAmount - oldTransaction.totalTransaction) : (wallet.totalAmount - oldTransaction.totalTransaction) - updateTransaction.totalTransaction
+          await prisma.wallet.update({
+            where:{id:wallet.id},
+            data:{
+              totalAmount:data,
+              updateAt : new Date()
+            }
+          })
+        }else {
+          const data = updateTransaction.category.type === "income"?wallet.totalAmount+ (2 * oldTransaction.totalTransaction):wallet.totalAmount - (2* oldTransaction.totalTransaction)
+
+          await prisma.wallet.update({
+            where:{
+              id:wallet.id
+            },
+            data:{
+              totalAmount:data,
+              updateAt : new Date()
+            }
+          })
+        }
+      }
       return "update success";
     } catch (error) {
       const err = error as Error;
