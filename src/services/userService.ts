@@ -20,6 +20,7 @@ export default new (class userServices {
           email: body.email,
           password: hashPassword,
           userName: body.userName,
+          role:body.role === "admin"?"admin":"user",
           wallet: {
             create: {
               totalAmount: 0,
@@ -56,6 +57,7 @@ export default new (class userServices {
         id: userByEmail.id,
         name: userByEmail.userName,
         email: userByEmail.email,
+        role:userByEmail.role
       };
 
       const token = jwt.sign(payload, process.env.SECRET_KEY!, {

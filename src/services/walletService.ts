@@ -94,10 +94,10 @@ export default new (class walletService {
     }
   }
 
-  incomeOutcomeSum(transaction: Itransaction[]) {
+  incomeoutcomeSum(transaction: Itransaction[]) {
     try {
       let totalIncome = 0;
-      let totalOutcome = 0;
+      let totaloutcome = 0;
       if (transaction.length > 0) {
         const incomeTransaction = transaction.filter((item) => {
           return item.category.type === "income";
@@ -108,20 +108,20 @@ export default new (class walletService {
           });
           totalIncome = totalAmount.reduce((acc, sum) => acc + sum, 0);
         }
-        const outComeTransaction = transaction.filter((item) => {
-          return item.category.type === "outCome";
+        const outcomeTransaction = transaction.filter((item) => {
+          return item.category.type === "outcome";
         });
-        if (outComeTransaction.length > 0) {
-          const totalAmount = outComeTransaction.map((item) => {
+        if (outcomeTransaction.length > 0) {
+          const totalAmount = outcomeTransaction.map((item) => {
             return item.totalTransaction;
           });
-          totalOutcome = totalAmount.reduce((acc, sum) => acc + sum, 0);
+          totaloutcome = totalAmount.reduce((acc, sum) => acc + sum, 0);
         }
       }
 
       return {
         totalIncome,
-        totalOutcome,
+        totaloutcome,
       };
     } catch (error) {
       const err = error as Error;
@@ -148,10 +148,10 @@ export default new (class walletService {
         endMonth
       );
 
-      const incomeOutcomeSum = this.incomeOutcomeSum(getFutureMonthTransaction);
+      const incomeoutcomeSum = this.incomeoutcomeSum(getFutureMonthTransaction);
 
       return {
-        ...incomeOutcomeSum,
+        ...incomeoutcomeSum,
         balance: walletAmount,
       };
     } catch (error) {
@@ -169,7 +169,7 @@ export default new (class walletService {
       }
       const walletAmount = user.wallet.totalAmount;
       const futuremonth = await this.getFutureMonthbalance(userId);
-      const sumFutureMonth = futuremonth.totalIncome - futuremonth.totalOutcome;
+      const sumFutureMonth = futuremonth.totalIncome - futuremonth.totaloutcome;
 
       const today = new Date();
       const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -189,11 +189,11 @@ export default new (class walletService {
         endMonth
       );
 
-      const incomeOutcomeSum = this.incomeOutcomeSum(getThisMonthTransaction);
+      const incomeoutcomeSum = this.incomeoutcomeSum(getThisMonthTransaction);
       const balance = walletAmount - sumFutureMonth;
 
       return {
-        ...incomeOutcomeSum,
+        ...incomeoutcomeSum,
         balance,
       };
     } catch (error) {
@@ -231,17 +231,17 @@ export default new (class walletService {
         endDate
       );
 
-      const incomeOutcomeSum = this.incomeOutcomeSum(lastMontTransaction);
+      const incomeoutcomeSum = this.incomeoutcomeSum(lastMontTransaction);
 
       const sumthisandFuture =
         thisMonth.totalIncome -
-        thisMonth.totalOutcome +
-        (futureMonth.totalIncome - futureMonth.totalOutcome);
+        thisMonth.totaloutcome +
+        (futureMonth.totalIncome - futureMonth.totaloutcome);
 
       const balance = walletAmount - sumthisandFuture;
 
       return {
-        ...incomeOutcomeSum,
+        ...incomeoutcomeSum,
         balance,
       };
     } catch (error) {

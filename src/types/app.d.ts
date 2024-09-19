@@ -1,9 +1,10 @@
-import { categoryType } from "@prisma/client";
+import { background, categoryType, role } from "@prisma/client";
 
 export interface Iregister {
   userName: string;
   email: string;
   password: string;
+  role:role
 }
 
 export interface Ilogin{
@@ -15,6 +16,7 @@ export interface Iuser {
   id: string;
   userName: string;
   email: string;
+  role:role
 }
 
 export interface IWallet {
@@ -41,10 +43,23 @@ export interface Itransaction {
     }
 }
 
+export interface Icategory{
+  name:string,
+  type:categoryType,
+  imgUrl:string,
+  bgImg: background
+}
+
 export interface IUpdateTransaction {
   totalTransaction :number,
   createdAt :string,
   categoryId :number,
   information:string,
   updateAt?:Date
+}
+
+export interface IUpdateCategory{
+  name:string,
+  imgUrl:string,
+  bgImg:background
 }

@@ -13,12 +13,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum categoryType{
+  income
+  outcome
+}
+
+enum role{
+  admin
+  user
+}
+
+enum background{
+  blue
+  yellow
+  green
+}
+
 model User {
   id String @id @unique @default(uuid())
   userName String
   email String @unique
   password String
   wallet Wallet?
+  role role @default(admin)
 }
 
 model Wallet {
@@ -38,21 +55,18 @@ model Transaction {
   information String 
   updateAt DateTime?
   walletId String
-  wallet Wallet @relation(fields: [walletId],references: [id])
+  wallet Wallet @relation(fields: [walletId],references: [id],onDelete: Cascade)
   categoryId Int
   category Category @relation(fields: [categoryId],references: [id])
 }
 
-enum categoryType{
-  income
-  outCome
-}
 
 model Category {
   id Int @id @unique @default(autoincrement())
   name String
   type categoryType
   imgUrl String
+  bgImg background
   transaction Transaction[]
 }
 

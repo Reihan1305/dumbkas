@@ -1,3 +1,4 @@
+import { role } from "@prisma/client";
 import Joi from "joi";
 
 export const register = Joi.object({
@@ -9,6 +10,7 @@ export const register = Joi.object({
     .message(
       "Password must be at least 8 character long and contain at at least one lowercase latter, one uppercase latter, and one number"
     ),
+  role:Joi.valid(...Object.values(role))
 });
 
 

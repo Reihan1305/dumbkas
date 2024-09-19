@@ -2,7 +2,7 @@ import { Itransaction, IUpdateTransaction } from "../types/app";
 import prisma from "../lib/prisma";
 
 export default new (class transactionService {
-  async createTransaction(body: Itransaction,userId:string) {
+  async createTransaction(body: Itransaction, userId: string) {
     try {
       const user = await prisma.user.findFirst({
         where: { id: userId },
@@ -48,16 +48,16 @@ export default new (class transactionService {
           data: {
             totalAmount:
               wallet.totalAmount + createTransaction.totalTransaction,
-              updateAt:new Date()
+            updateAt: new Date(),
           },
         });
-      } else if(category.type === "outCome") {
+      } else if (category.type === "outcome") {
         await prisma.wallet.update({
           where: { id: wallet.id },
           data: {
             totalAmount:
               wallet.totalAmount - createTransaction.totalTransaction,
-            updateAt:new Date()
+            updateAt: new Date(),
           },
         });
       }
@@ -275,7 +275,7 @@ export default new (class transactionService {
           throw new Error("Category not found");
         }
 
-        body.categoryId = category.id
+        body.categoryId = category.id;
       }
 
       const updateTransaction = await prisma.transaction.update({
@@ -284,34 +284,43 @@ export default new (class transactionService {
           walletId: wallet.id,
         },
         data: body,
-        include:{
-          category:true
-        }
+        include: {
+          category: true,
+        },
       });
 
-      console.log(typeof body.totalTransaction)
-      if(oldTransaction.category.type !== updateTransaction.category.type){
-        if(typeof body.totalTransaction === "number"){
-          const data = updateTransaction.category.type === "income" ? updateTransaction.totalTransaction +(wallet.totalAmount - oldTransaction.totalTransaction) : (wallet.totalAmount - oldTransaction.totalTransaction) - updateTransaction.totalTransaction
+      console.log(typeof body.totalTransaction);
+      if (oldTransaction.category.type !== updateTransaction.category.type) {
+        if (typeof body.totalTransaction === "number") {
+          const data =
+            updateTransaction.category.type === "income"
+              ? updateTransaction.totalTransaction +
+                (wallet.totalAmount - oldTransaction.totalTransaction)
+              : wallet.totalAmount -
+                oldTransaction.totalTransaction -
+                updateTransaction.totalTransaction;
           await prisma.wallet.update({
-            where:{id:wallet.id},
-            data:{
-              totalAmount:data,
-              updateAt : new Date()
-            }
-          })
-        }else {
-          const data = updateTransaction.category.type === "income"?wallet.totalAmount+ (2 * oldTransaction.totalTransaction):wallet.totalAmount - (2* oldTransaction.totalTransaction)
+            where: { id: wallet.id },
+            data: {
+              totalAmount: data,
+              updateAt: new Date(),
+            },
+          });
+        } else {
+          const data =
+            updateTransaction.category.type === "income"
+              ? wallet.totalAmount + 2 * oldTransaction.totalTransaction
+              : wallet.totalAmount - 2 * oldTransaction.totalTransaction;
 
           await prisma.wallet.update({
-            where:{
-              id:wallet.id
+            where: {
+              id: wallet.id,
             },
-            data:{
-              totalAmount:data,
-              updateAt : new Date()
-            }
-          })
+            data: {
+              totalAmount: data,
+              updateAt: new Date(),
+            },
+          });
         }
       }
       return "update success";
