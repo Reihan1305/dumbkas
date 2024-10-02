@@ -103,6 +103,9 @@ export default new (class transactionService {
           },
         },
         orderBy: { createdAt: "desc" },
+        include:{
+          category:true
+        }
       });
       if (transaction.length <= 0) {
         return "last month transaction not found";
@@ -144,17 +147,19 @@ export default new (class transactionService {
         where: {
           walletId: wallet?.id,
           createdAt: {
-            //greater than equal
             gte: startDate,
-            //less than
             lt: endDate,
           },
         },
+        include:{
+          category:true
+        }
       });
 
-      if (!transaction) {
-        throw new Error("transaction this month not found");
+      if (transaction.length <= 0) {
+        return "this month transaction not found";
       }
+
 
       return transaction;
     } catch (error) {
@@ -192,17 +197,19 @@ export default new (class transactionService {
         where: {
           walletId: wallet?.id,
           createdAt: {
-            //greater than equal
             gte: startDate,
-            //less than
             lt: endDate,
           },
         },
+        include:{
+          category:true
+        }
       });
 
-      if (!transaction) {
-        throw new Error("transaction future month not found");
+      if (transaction.length <= 0) {
+        return "future month transaction not found";
       }
+
 
       return transaction;
     } catch (error) {
