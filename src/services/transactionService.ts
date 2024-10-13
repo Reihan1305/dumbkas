@@ -107,9 +107,6 @@ export default new (class transactionService {
           category:true
         }
       });
-      if (transaction.length <= 0) {
-        return "last month transaction not found";
-      }
 
       return transaction;
     } catch (error) {
@@ -156,11 +153,6 @@ export default new (class transactionService {
         }
       });
 
-      if (transaction.length <= 0) {
-        return "this month transaction not found";
-      }
-
-
       return transaction;
     } catch (error) {
       const err = error as Error;
@@ -205,11 +197,6 @@ export default new (class transactionService {
           category:true
         }
       });
-
-      if (transaction.length <= 0) {
-        return "future month transaction not found";
-      }
-
 
       return transaction;
     } catch (error) {

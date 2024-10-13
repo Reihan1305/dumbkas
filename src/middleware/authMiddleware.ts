@@ -38,7 +38,6 @@ export default new (class authMiddleware {
       if(user.role !== "admin"){
         return res.status(400).json({message:"you are not admin"})
       }
-
       next()
     } catch (error) {
       return res.status(500).json({
